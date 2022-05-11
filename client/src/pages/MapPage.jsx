@@ -13,3 +13,4 @@ function MapPage({ gasInfoHead, title, fuelValue }) {
 }
 
 export default MapPage;
+
