@@ -2,18 +2,27 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { MdGpsFixed } from 'react-icons/md';
-import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Popup, ZoomControl } from 'react-leaflet';
 import LocationMarker from '../map/LocationMarker.jsx';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
+import 'leaflet/dist/leaflet.css';
 
 const mapToken = process.env.REACT_APP_API_KEY;
 
 function Map({ stations, fuelValue }) {
   const [GPSButtonIsClicked, setGPSButtonIsClicked] = useState(false);
-
+  {
+    /* We will add this code later when we have a working map again.
+    <ZoomControl position="topright" />
+      <GPSButton
+        onClick={() => {
+          setGPSButtonIsClicked(true);
+        }}>
+        <MdGpsFixed />
+      </GPSButton> */
+  }
   return (
     <MapWrapper
-      className="markercluster-map"
       center={[52.500478, 13.376696]}
       zoom={13}
       scrollWheelZoom={true}
@@ -24,35 +33,32 @@ function Map({ stations, fuelValue }) {
           mapToken
         }
       />
-      <ZoomControl position="topright" />
-      <GPSButton
-        onClick={() => {
-          setGPSButtonIsClicked(true);
-        }}>
-        <MdGpsFixed />
-      </GPSButton>
-
-      {stations
-        // .filter(station => station.fuelPrices[fuelValue] !== null)
-        .map(station => {
-          console.log(station);
-          return (
-            <NewPopup
-              key={station.id}
-              position={[station.address.latitude, station.address.longitude]}
-              autoClose={false}
-              closeOnEscapeKey={false}
-              closeButton={false}
-              closeOnClick={false}>
-              <Price>{station.fuelPrices[fuelValue].price + ' €'}</Price>
-              <Link to={`/${station.id}`}>Mehr</Link>
-            </NewPopup>
-          );
-        })}
-      {GPSButtonIsClicked ? <LocationMarker /> : null}
+      <MarkerCluster>
+        {stations
+          .filter(station => station.fuelPrices[fuelValue] !== null)
+          .map(station => {
+            return (
+              <NewPopup
+                key={station.id}
+                position={[station.address.latitude, station.address.longitude]}
+                autoClose={false}
+                closeOnEscapeKey={false}
+                closeButton={false}
+                closeOnClick={false}>
+                <Price>{station.fuelPrices[fuelValue].price + ' €'}</Price>
+                <Link to={`/${station.id}`}>Mehr</Link>
+              </NewPopup>
+            );
+          })}
+        {GPSButtonIsClicked ? <LocationMarker /> : null}
+      </MarkerCluster>
     </MapWrapper>
   );
 }
+
+const MarkerCluster = styled(MarkerClusterGroup)`
+  height: 90vh;
+`;
 
 const MapWrapper = styled(MapContainer)`
   position: absolute;
