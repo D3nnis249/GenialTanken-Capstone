@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { MdGpsFixed } from 'react-icons/md';
-import { MapContainer, TileLayer, Popup, ZoomControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Popup, ZoomControl, Marker } from 'react-leaflet';
 import LocationMarker from '../map/LocationMarker.jsx';
-import MarkerClusterGroup from 'react-leaflet-markercluster';
-import 'leaflet/dist/leaflet.css';
+import MarkerClusterGroup from "react-leaflet-markercluster";
+import "../../styles.css";
 
 const mapToken = process.env.REACT_APP_API_KEY;
 
@@ -23,6 +23,7 @@ function Map({ stations, fuelValue }) {
   }
   return (
     <MapWrapper
+    className="markercluster-map"
       center={[52.500478, 13.376696]}
       zoom={13}
       scrollWheelZoom={true}
@@ -33,8 +34,30 @@ function Map({ stations, fuelValue }) {
           mapToken
         }
       />
-      <MarkerCluster>
-        {stations
+      <MarkerClusterGroup>
+
+      {stations
+          .filter((station) => station.fuelPrices["e5"] !== null)
+          .map((station) => {
+            return (
+              <Marker
+                key={station.id}
+                position={[station.address.latitude, station.address.longitude]}
+              />
+              // {/* <NewPopup
+
+              //   autoClose={false}
+              //   closeOnEscapeKey={false}
+              //   closeButton={false}
+              //   closeOnClick={false}>
+              //   <Price>{station.fuelPrices[fuelValue].price + ' €'}</Price>
+              //   <Link to={`/${station.id}`}>Mehr</Link>
+              // </NewPopup> */}
+            );
+          })}
+
+
+        {/* {stations
           .filter(station => station.fuelPrices[fuelValue] !== null)
           .map(station => {
             return (
@@ -50,8 +73,8 @@ function Map({ stations, fuelValue }) {
               </NewPopup>
             );
           })}
-        {GPSButtonIsClicked ? <LocationMarker /> : null}
-      </MarkerCluster>
+        {GPSButtonIsClicked ? <LocationMarker /> : null} */}
+      </MarkerClusterGroup>
     </MapWrapper>
   );
 }
